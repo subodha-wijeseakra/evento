@@ -33,7 +33,7 @@ Team Members
 
 Subodha Wijesekara 
 Chandupa Senarathna
-Ruwani Wickramathunga
+Sonduruvani wickramarathna
 N Chanuuj
 
 
