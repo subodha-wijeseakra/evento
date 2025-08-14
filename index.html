@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Web Projects</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f3f3f3;
+      color: #1a1a1a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .window {
+      width: 480px;
+      background-color: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      padding: 24px;
+    }
+
+    .title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+    }
+
+    .item {
+      display: flex;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: 8px;
+      text-decoration: none;
+      color: #333;
+      margin-bottom: 10px;
+      transition: background 0.2s;
+    }
+
+    .item:hover {
+      background-color: #f0f4ff;
+    }
+
+    .icon {
+      font-size: 20px;
+      margin-right: 12px;
+      color: #3a78f2;
+    }
+
+    .name {
+      font-size: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="window">
+    <div class="title">📁 Local Projects</div>
+
+    <a href="http://localhost/evento/FrontEnd/Demo/index.php" class="item" target="_blank">
+      <div class="icon">📁</div>
+      <div class="name">evento</div>
+    </a>
+
+    <a href="http://localhost/evento/FrontEnd/Demo/admin_auth.php" class="item" target="_blank">
+      <div class="icon">👤</div>
+      <div class="name">Admin</div>
+    </a>
+
+    <a href="http://localhost/evento/FrontEnd/Demo/admin_dashboard.php" class="item" target="_blank">
+      <div class="icon">📊</div>
+      <div class="name">Admin Dashboard</div>
+    </a>
+
+    <a href="http://localhost/phpmyadmin/index.php" class="item" target="_blank">
+      <div class="icon">📁</div>
+      <div class="name">PHPMyAdmin</div>
+    </a>
+    <a href="http://localhost/evento/FrontEnd/Demo/message.php" class="item" target="_blank">
+      <div class="icon">📁</div>
+      <div class="name">message</div>
+    </a>
+
+
+
+
+
+
+
+  </div>
+
+</body>
+</html>
