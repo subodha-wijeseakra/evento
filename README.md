@@ -32,7 +32,6 @@ Tech Stack
 Team Members
 
 Subodha Wijesekara 
-Chandupa Senarathna
 Sonduruvani wickramarathna
 N Chanuuj
 
