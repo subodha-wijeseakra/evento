@@ -142,7 +142,9 @@ if ($email) {
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 <link href="Assests/css/dbcarousel.css" rel="stylesheet">
 <link href="Assests/css/navbar.css" rel="stylesheet">
   <link href="Assests/css/carousel.css" rel="stylesheet">
@@ -194,51 +196,65 @@ if ($email) {
   </a>
 
   <!-- Right-side: Icons + Toggler (in one row) -->
-  <div class="d-flex align-items-center ms-auto order-lg-3">
+<div class="d-flex align-items-center order-lg-3" style="margin-left: auto; gap: 0.5rem;">
 
-    <!-- Notification Icon -->
-    <div class="dropdown me-2">
-  <a class="btn btn-light position-relative" href="#" id="notifDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    <i class="bi bi-bell fs-5"></i>
-    <?php if ($unread_count > 0): ?>
-      <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-        <?= $unread_count ?>
-      </span>
-    <?php endif; ?>
-  </a>
-  <ul class="dropdown-menu dropdown-menu-end p-2 shadow" aria-labelledby="notifDropdown" style="width: 350px; max-width: 90vw;">
-    <li><strong class="dropdown-header">Notifications</strong></li>
-    <?php if (count($messages) > 0): ?>
-      <?php foreach ($messages as $msg): ?>
-        <li class="d-flex justify-content-between align-items-start px-2 py-1 border-bottom small">
-          <div>
-            <div class="<?= $msg['is_read'] ? 'text-muted' : 'fw-bold' ?>">
-              <?= htmlspecialchars($msg['content']) ?>
-            </div>
-            <?php if (isset($msg['created_at'])): ?>
-              <small class="text-secondary">
-                <?= date("M d, Y - h:i A", strtotime($msg['created_at'])) ?>
-              </small>
-            <?php endif; ?>
-          </div>
-          <div class="ms-2 d-flex gap-1">
-            <?php if (!$msg['is_read']): ?>
-              <button class="btn btn-sm btn-outline-success btn-read" data-id="<?= $msg['id'] ?>" title="Mark as Read">
-                <i class="fas fa-eye"></i>
-              </button>
-            <?php endif; ?>
-            <button class="btn btn-sm btn-outline-danger btn-delete" data-id="<?= $msg['id'] ?>" title="Delete">
-              <i class="fas fa-trash-alt"></i>
-            </button>
-          </div>
-        </li>
-      <?php endforeach; ?>
-    <?php else: ?>
-      <li><span class="dropdown-item text-muted">No messages</span></li>
-    <?php endif; ?>
-  </ul>
+<style>
+    .notifications-list {
+        max-height: 250px; /* Adjust this value to show approximately 5 messages */
+        overflow-y: auto;
+    }
+    .btn-icon-only {
+        border: none;
+        background-color: transparent;
+        padding: 0.25rem 0.5rem; /* Adjust padding as needed */
+    }
+    .btn-icon-only i {
+        color: inherit; /* Use the parent button's color */
+    }
+</style>
+
+<div class="dropdown me-2">
+    <a class="btn btn-light position-relative" href="#" id="notifDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-bell fs-5"></i>
+        <?php if ($unread_count > 0): ?>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="color:white;">
+                <?= $unread_count ?>
+            </span>
+        <?php endif; ?>
+    </a>
+
+    <ul class="dropdown-menu dropdown-menu-end p-2 shadow notifications-list" aria-labelledby="notifDropdown" style="width: 500px; max-width: 90vw; right:0; left:auto;">
+        <li><strong class="dropdown-header">Notifications</strong></li>
+        <?php if (count($messages) > 0): ?>
+            <?php foreach ($messages as $msg): ?>
+                <li class="d-flex justify-content-between align-items-start px-2 py-1 border-bottom small">
+                    <div>
+                        <div class="<?= $msg['is_read'] ? 'text-muted' : 'fw-bold' ?>">
+                            <?= htmlspecialchars($msg['content']) ?>
+                        </div>
+                        <?php if (isset($msg['created_at'])): ?>
+                            <small class="text-secondary">
+                                <?= date("M d, Y - h:i A", strtotime($msg['created_at'])) ?>
+                            </small>
+                        <?php endif; ?>
+                    </div>
+                    <div class="ms-2 d-flex gap-1">
+                        <?php if (!$msg['is_read']): ?>
+                            <button class="btn btn-sm btn-icon-only btn-read text-success" data-id="<?= $msg['id'] ?>" title="Mark as Read">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        <?php endif; ?>
+                        <button class="btn btn-sm btn-icon-only btn-delete text-danger" data-id="<?= $msg['id'] ?>" title="Delete">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                </li>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <li><span class="dropdown-item text-muted">No messages</span></li>
+        <?php endif; ?>
+    </ul>
 </div>
-
 <?php
 include 'db.php';
 
@@ -267,7 +283,7 @@ if ($email) {
      <i class="fas fa-user-circle" style="font-size: 2rem;"></i>
   </a>
 
-  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownUser" style="width: 250px;">
+  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownUser" style="width: 250px; max-width: 90vw; overflow:auto; right:0; left:auto;">
     <li><a class="dropdown-item" href="#">Hey, <?= htmlspecialchars($username) ?></a></li>
     <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#settingsModal">Settings</a></li>
     <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Change Password</a></li>
@@ -355,142 +371,461 @@ document.querySelectorAll('.dropdown-menu .dropdown-toggle').forEach(function(el
 
 
 
-<div id="fadeSlideshow" class="position-relative overflow-hidden">
-  <!-- Google Fonts + Bootstrap -->
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-  <!-- Slides -->
-  <div class="fade-slide active" style="background-image: url('Assests/Images/1.png');">
-    <div class="container h-100 d-flex align-items-end pb-5" style="max-width: 80%;">
-      <div class="text-white">
-        <h1 class="fw-semibold">Sahasak Nimawum 2025</h1>
-        <p class="mb-3">A celebration of innovation and culture. Join thousands of students, professionals and creators!</p>
-        <a href="#" class="btn btn-primary me-2">Buy Ticket</a>
-        <a href="#" class="btn btn-outline-light">Learn More</a>
-      </div>
+
+<div class="content-container mb-6">
+  <h2 class="text-3xl font-bold text-center mb-6">Event Calendar</h2>
+</div>
+
+<!-- Filter + Search -->
+<form method="GET" class="filter-bar">
+  <input type="text" name="search" placeholder="Search events..." value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
+  <select name="sort">
+    <option value="">Sort By</option>
+    <option value="date_asc" <?php if(isset($_GET['sort']) && $_GET['sort']=="date_asc") echo "selected"; ?>>Date ↑</option>
+    <option value="date_desc" <?php if(isset($_GET['sort']) && $_GET['sort']=="date_desc") echo "selected"; ?>>Date ↓</option>
+    <option value="fee_low" <?php if(isset($_GET['sort']) && $_GET['sort']=="fee_low") echo "selected"; ?>>Fee Low → High</option>
+    <option value="fee_high" <?php if(isset($_GET['sort']) && $_GET['sort']=="fee_high") echo "selected"; ?>>Fee High → Low</option>
+  </select>
+  <button type="submit">Search</button>
+</form>
+
+<?php
+include 'fetch_courses.php';
+
+// Search filter
+if(isset($_GET['search']) && $_GET['search'] !== ""){
+  $search = strtolower($_GET['search']);
+  $courses = array_filter($courses, function($course) use ($search) {
+    return strpos(strtolower($course['title']), $search) !== false ||
+           strpos(strtolower($course['department']), $search) !== false ||
+           strpos(strtolower($course['description']), $search) !== false;
+  });
+}
+
+// Sorting
+if(isset($_GET['sort'])){
+  if($_GET['sort'] == "date_asc"){
+    usort($courses, fn($a,$b)=>strtotime($a['date'])-strtotime($b['date']));
+  }
+  if($_GET['sort'] == "date_desc"){
+    usort($courses, fn($a,$b)=>strtotime($b['date'])-strtotime($a['date']));
+  }
+  if($_GET['sort'] == "fee_low"){
+    usort($courses, fn($a,$b)=>$a['fee']-$b['fee']);
+  }
+  if($_GET['sort'] == "fee_high"){
+    usort($courses, fn($a,$b)=>$b['fee']-$a['fee']);
+  }
+}
+
+// Pagination
+$perPage = 6;
+$total = count($courses);
+$totalPages = ceil($total / $perPage);
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+if($page < 1) $page = 1;
+if($page > $totalPages) $page = $totalPages;
+
+$start = ($page-1) * $perPage;
+$paginatedCourses = array_slice($courses, $start, $perPage);
+?>
+
+<div class="events-grid">
+  <?php
+  foreach ($paginatedCourses as $course) {
+    echo '<div class="event-card">';
+    echo '<div class="event-date">'.date("M d, Y", strtotime($course['date'])).'</div>';
+    echo '<h3 class="event-title">'.$course['title'].'</h3>';
+    echo '<p class="event-dept">'.$course['department'].'</p>';
+    echo '<p class="event-desc">'.$course['description'].'</p>';
+    echo '<div class="event-footer">';
+    echo '<span class="event-fee">$'.$course['fee'].'</span>';
+    echo '</div>';
+    echo '</div>';
+  }
+  ?>
+</div>
+
+<!-- Pagination -->
+<div class="pagination">
+  <?php if($page > 1): ?>
+    <a href="?<?php echo http_build_query(array_merge($_GET,['page'=>$page-1])); ?>">&laquo; Prev</a>
+  <?php endif; ?>
+
+  <?php for($i=1;$i<=$totalPages;$i++): ?>
+    <a href="?<?php echo http_build_query(array_merge($_GET,['page'=>$i])); ?>" class="<?php if($i==$page) echo 'active'; ?>"><?php echo $i; ?></a>
+  <?php endfor; ?>
+
+  <?php if($page < $totalPages): ?>
+    <a href="?<?php echo http_build_query(array_merge($_GET,['page'=>$page+1])); ?>">Next &raquo;</a>
+  <?php endif; ?>
+</div>
+
+
+<style>
+/* Filter bar */
+.filter-bar {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  max-width: 900px;
+  margin: 0 auto 20px;
+}
+.filter-bar input, .filter-bar select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+}
+.filter-bar button {
+  background: #2563eb;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.filter-bar button:hover {
+  background: #2563eb;
+}
+
+/* Grid */
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Card */
+.event-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+  transition: all 0.25s ease;
+}
+.event-card:hover {
+  border-color: #2563eb;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.05);
+}
+.event-date {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #2563eb;
+  margin-bottom: 8px;
+}
+.event-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 6px 0 4px;
+  color: #111827;
+}
+.event-dept {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #6b7280;
+  margin-bottom: 10px;
+}
+.event-desc {
+  font-size: 0.95rem;
+  color: #374151;
+  margin-bottom: 15px;
+  line-height: 1.45;
+}
+.event-footer {
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid #f3f4f6;
+  padding-top: 8px;
+}
+.event-fee {
+  font-weight: 600;
+  color: #2563eb;
+  font-size: 0.95rem;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin: 20px 0;
+}
+.pagination a {
+  padding: 6px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  color: #111827;
+  text-decoration: none;
+}
+.pagination a.active {
+  background: #4f46e5;
+  color: #fff;
+  border-color: #4f46e5;
+}
+.pagination a:hover {
+  background: #f3f4f6;
+}
+</style>
+
+
+
+
+
+
+<section id="nr-about-us">
+  <div id="nr-about-inner">
+    <div id="nr-about-text">
+      <h2 id="nr-small-title">Success stories</h2>
+      <h2 id="nr-small-title">Akurata Rukulak 2024 yako</h2>
+      <p id="nr-about-paragraph">
+        We are a passionate team committed to delivering quality, creativity, and innovation.
+        Our goal is to create exceptional experiences through every project we undertake. With
+        a focus on reliability and excellence, we work closely with our clients to bring ideas
+        to life. From strategy to execution, we ensure every step is handled with care and
+        dedication.
+      </p>
+    </div>
+    <div id="nr-about-image-wrapper">
+      <img src="Assests/Images/1.png" alt="About Us Image" id="nr-about-image" />
     </div>
   </div>
+</section>
 
-  <div class="fade-slide" style="background-image: url('Assests/Images/2.png');">
-    <div class="container h-100 d-flex align-items-end pb-5" style="max-width: 80%;">
-      <div class="text-white">
-        <h1 class="fw-semibold">Connect & Celebrate</h1>
-        <p class="mb-3">Experience inspiring performances and connect with creators nationwide.</p>
-        <a href="#" class="btn btn-primary me-2">Buy Ticket</a>
-        <a href="#" class="btn btn-outline-light">Learn More</a>
-      </div>
-    </div>
-  </div>
+<style>
+/* Container */
+#nr-about-us {
+  padding: 5rem 2rem;
+  background-color: #f5f7fa;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
-  <!-- Controls -->
-  <button id="prevFade" class="btn btn-primary position-absolute top-50 start-0 translate-middle-y ms-3 z-3">&#8592;</button>
-  <button id="nextFade" class="btn btn-primary position-absolute top-50 end-0 translate-middle-y me-3 z-3">&#8594;</button>
-</div>
+/* Inner flex layout */
+#nr-about-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 3rem;
+  flex-wrap: wrap;
+}
 
+/* Text content */
+#nr-about-text {
+  flex: 1 1 500px;
+}
 
-  
+#nr-small-title {
+  font-size: 2rem;
+  color: #444;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+}
 
-</div>
+#nr-main-title {
+  font-size: 2.8rem;
+  color: #0070f3; /* Next.js blue */
+  margin-bottom: 1.2rem;
+  font-weight: 700;
+}
 
-<div class="content-container" style="margin-bottom: 20px;">
-  <h2 class="content-title">Event Calendar</h2>
-</div>
-  
-<div class="carousel-wrapper">
-  <div id="courseCarousel" class="carousel slide" data-ride="carousel" data-interval="10000">
-    <div class="carousel-inner">
-      <?php
-      include 'fetch_courses.php';
-      $chunks = array_chunk($courses, 4);
-      foreach ($chunks as $index => $chunk) {
-        echo '<div class="carousel-item'.($index === 0 ? ' active' : '').'">';
-        echo '<div class="row justify-content-center">';
-        foreach ($chunk as $i => $course) {
-          echo '<div class="col-md-5">';
-          echo '<div class="tile">';
-          echo '<h5>'.$course['title'].'</h5>';
-          echo '<div class="department">'.$course['department'].'</div>';
-          echo '<div class="description">'.$course['description'].'</div>';
-          echo '<div class="footer">';
-          echo '<span>'.$course['date'].'</span>';
-          echo '<span>$'.$course['fee'].'</span>';
-          echo '</div>'; // footer
-          echo '</div>'; // tile
-          echo '</div>'; // col
-        }
-        echo '</div>'; // row
-        echo '</div>'; // carousel-item
-      }
-      ?>
-      
-    </div>
-<!-- Controls -->
-<div class="carousel-controls d-flex justify-content-between align-items-center position-absolute top-50 start-0 w-100 px-3" style="transform: translateY(-40%); z-index: 3;">
+#nr-about-paragraph {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #555;
+}
+
+/* Image wrapper */
+#nr-about-image-wrapper {
+  flex: 1 1 450px;
+  position: relative;
+}
+
+#nr-about-image {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 15px;
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+#nr-about-image:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 18px 30px rgba(0, 0, 0, 0.18);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  #nr-about-inner {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  #nr-about-image-wrapper {
+    margin-top: 2rem;
+  }
+
+  #nr-main-title {
+    font-size: 2.2rem;
+  }
+}
+</style>
+
  
 
-   <a class="carousel-control-prev" href="#courseCarousel" role="button" data-slide="prev">
-  <i class="bi bi-arrow-left-circle-fill carousel-btn left"></i>
-</a>
-<a class="carousel-control-next" href="#courseCarousel" role="button" data-slide="next">
-  <i class="bi bi-arrow-right-circle-fill carousel-btn right"></i>
-</a>
-</div>
-  </div>
-</div>
 
 
 
-<section class="about-us-container">
-  <div class="about-us-inner">
-    
-    <div class="about-text">
-      <h2>Success stories</h2>
-      <h2>Akurata Rukulak 2024</h2>
-      <p>
+
+
+
+
+
+
+<section id="nr-organizer-us">
+  <div id="nr-organizer-inner">
+    <div id="nr-organizer-text">
+      <h2 id="nr-org-small-title">Want to be an Organizer?</h2>
+      <h2 id="nr-org-main-title">The master mind </h2>
+      <p id="nr-org-paragraph">
         We are a passionate team committed to delivering quality, creativity, and innovation.
         Our goal is to create exceptional experiences through every project we undertake.
         With a focus on reliability and excellence, we work closely with our clients to bring
         ideas to life. From strategy to execution, we ensure every step is handled with care
         and dedication.
       </p>
-     
+      <a href="#" id="nr-org-btn" data-bs-toggle="modal" data-bs-target="#organizerModal">Register</a>
     </div>
-     <img src="Assests/Images/1.png" alt="About Us Image" class="about-image">
+    <div id="nr-organizer-image-wrapper">
+      <img src="Assests/Images/organizer.png" alt="Organizer Image" id="nr-organizer-image">
+    </div>
   </div>
 </section>
+
+<style>
+/* Container */
+#nr-organizer-us {
+  padding: 5rem 2rem;
+  background-color: #fff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Inner flex layout */
+#nr-organizer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 3rem;
+  flex-wrap: wrap;
+}
+
+/* Text content */
+#nr-organizer-text {
+  flex: 1 1 500px;
+}
+
+#nr-org-small-title {
+  font-size: 2rem;
+  color: #444;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Dynamic color-changing main title */
+#nr-org-main-title {
+  font-size: 2.8rem;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+  background: linear-gradient(90deg, #0070f3, #ff4d6d, #ff8a71);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: nr-colorShift 5s ease infinite;
+}
+
+@keyframes nr-colorShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+#nr-org-paragraph {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #555;
+  margin-bottom: 1.5rem;
+}
+
+/* Button */
+#nr-org-btn {
+  display: inline-block;
+  padding: 0.6rem 1.4rem;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 8px;
+  background-color: #007bff;
+  color: white;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#nr-org-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 15px rgba(0, 123, 255, 0.3);
+}
+
+/* Image wrapper */
+#nr-organizer-image-wrapper {
+  flex: 1 1 450px;
+  position: relative;
+}
+
+#nr-organizer-image {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 15px;
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+#nr-organizer-image:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 18px 30px rgba(0, 0, 0, 0.18);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  #nr-organizer-inner {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  #nr-organizer-image-wrapper {
+    margin-top: 2rem;
+  }
+
+  #nr-org-main-title {
+    font-size: 2.2rem;
+  }
+}
+</style>
+
  
 
 
-
-
-
-
-<hr class="responsive-stroke">
-
-
-
-<section class="about-us-container">
-  <div class="about-us-inner">
-    
-    <div class="about-text">
-      <h2>Want to be an Organizer?</h2>
-      <h2>Akurata Rukulak 2024</h2>
-      <p>
-        We are a passionate team committed to delivering quality, creativity, and innovation.
-        Our goal is to create exceptional experiences through every project we undertake.
-        With a focus on reliability and excellence, we work closely with our clients to bring
-        ideas to life. From strategy to execution, we ensure every step is handled with care
-        and dedication.
-      </p>
-     <a href="#" class="btn btn-outline-primary btn-sm nav-btn" data-bs-toggle="modal" data-bs-target="#organizerModal" style="background-color: #007bff; color: white;">Register</a>
-    </div>
-     <img src="Assests/Images/organizer.png" alt="About Us Image" class="about-image">
-  </div>
-</section>
- 
-
-<hr class="responsive-stroke">
 <!-- Reusable Content Component -->
 <div class="content-container">
   <h2 class="content-title">Gallery</h2>
@@ -498,23 +833,379 @@ document.querySelectorAll('.dropdown-menu .dropdown-toggle').forEach(function(el
 
 
 
-<div class="carousel-section">
-  <div class="custom-carousel-wrapper">
-    <div class="custom-carousel-track" id="customCarouselTrack">
-      <div class="custom-carousel-item"><img src="Assests/Images/1.png" alt="Slide 1"></div>
-      <div class="custom-carousel-item"><img src="Assests/Images/3.jpg" alt="Slide 2"></div>
-      <div class="custom-carousel-item"><img src="Assests/Images/2.png" alt="Slide 1"></div>
-      <div class="custom-carousel-item"><img src="Assests/Images/3.jpg" alt="Slide 2"></div>
-      <div class="custom-carousel-item"><img src="Assests/Images/2.png" alt="Slide 1"></div>
-      <div class="custom-carousel-item"><img src="Assests/Images/3.jpg" alt="Slide 2"></div>  
-    </div>
-    <div class="custom-carousel-controls">
-      <button class="custom-carousel-button" id="customPrevBtn">&#10094;</button>
-      <button class="custom-carousel-button" id="customNextBtn">&#10095;</button>
+<div class="nx-carousel-card" aria-roledescription="carousel" id="nxCarousel">
+  <div class="nx-badge">Gallery • v1.0</div>
+
+  <div class="nx-carousel-viewport">
+    <div class="nx-carousel-track" id="nxTrack" role="list">
+      <!-- Page 1 (first 3) -->
+      <div class="nx-carousel-page" role="group" aria-roledescription="page" aria-label="1 of 2">
+        <div class="nx-carousel-item"><img src="Assests/Images/1.png" alt="Slide 1"></div>
+        <div class="nx-carousel-item"><img src="Assests/Images/3.jpg" alt="Slide 2"></div>
+        <div class="nx-carousel-item"><img src="Assests/Images/2.png" alt="Slide 3"></div>
+      </div>
+
+      <!-- Page 2 (next 3) -->
+      <div class="nx-carousel-page" role="group" aria-roledescription="page" aria-label="2 of 2">
+        <div class="nx-carousel-item"><img src="Assests/Images/3.jpg" alt="Slide 4"></div>
+        <div class="nx-carousel-item"><img src="Assests/Images/2.png" alt="Slide 5"></div>
+        <div class="nx-carousel-item"><img src="Assests/Images/3.jpg" alt="Slide 6"></div>
+      </div>
     </div>
   </div>
+
+  <button class="nx-btn nx-prev" id="nxPrev" aria-label="Previous set">&larr;</button>
+  <button class="nx-btn nx-next" id="nxNext" aria-label="Next set">&rarr;</button>
+
+  <!-- Lightbox / Zoomed view -->
+  <div id="nxLightbox" class="nx-lightbox" role="dialog" aria-hidden="true">
+    <button class="nx-lightbox-close" aria-label="Close">&times;</button>
+    <button class="nx-lightbox-nav nx-lightbox-prev" aria-label="Previous image">&#10094;</button>
+    <div class="nx-lightbox-stage" tabindex="0">
+      <img id="nxLightboxImg" src="" alt="Expanded image">
+    </div>
+    <button class="nx-lightbox-nav nx-lightbox-next" aria-label="Next image">&#10095;</button>
+  </div>
+
+  <style>
+    /* Desktop width 80% (normal screens) */
+    .nx-carousel-card {
+      width: 80%;
+      max-width: 80%;
+      margin: 40px auto;
+      padding: 20px;
+      border-radius: 14px;
+      position: relative;
+      background: linear-gradient(180deg,#ffffff,#fbfbfd);
+      box-shadow: 0 18px 40px rgba(2,6,23,0.08);
+      border: 1px solid rgba(15,23,42,0.04);
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      overflow: visible;
+    }
+
+    .nx-badge {
+      position: absolute;
+      left: 18px;
+      top: 14px;
+      z-index: 5;
+      background: rgba(15,23,42,0.92);
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 12px;
+      box-shadow: 0 6px 18px rgba(2,6,23,0.08);
+    }
+
+    .nx-carousel-viewport {
+      width: 100%;
+      overflow: hidden;
+      border-radius: 10px;
+      margin: 6px 0 0 0;
+    }
+
+    .nx-carousel-track {
+      display: flex;
+      width: 200%;
+      transition: transform 600ms cubic-bezier(.2,.9,.3,1);
+      will-change: transform;
+    }
+
+    .nx-carousel-page {
+      width: 50%;
+      display: flex;
+      gap: 14px;
+      padding: 22px;
+      box-sizing: border-box;
+      align-items: stretch;
+      justify-content: center;
+    }
+
+    .nx-carousel-item {
+      flex: 1 1 calc((100% / 3) - 14px);
+      min-width: 0;
+      height: 260px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: linear-gradient(180deg,#fff,#f8fafc);
+      box-shadow: 0 8px 24px rgba(2,6,23,0.06);
+      border: 1px solid #f3f4f6;
+      transition: transform .18s ease, box-shadow .18s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-in;
+    }
+
+    .nx-carousel-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      pointer-events: none; /* container handles clicks */
+    }
+
+    .nx-carousel-item:hover {
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 0 18px 36px rgba(2,6,23,0.10);
+    }
+
+    /* Controls placed overlay left/right vertically centered */
+    .nx-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 52px;
+      height: 52px;
+      border-radius: 999px;
+      border: 0;
+      background: rgba(255,255,255,0.9);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 18px;
+      color: #0b1220;
+      box-shadow: 0 10px 28px rgba(2,6,23,0.12);
+      transition: transform .12s ease, background .12s ease;
+      z-index: 7;
+    }
+    .nx-prev { left: 10px; }
+    .nx-next { right: 10px; }
+    .nx-btn:hover { transform: translateY(-50%) scale(1.04); background: #fff; }
+
+    /* Lightbox styles */
+    .nx-lightbox {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(4,6,12,0.75);
+      z-index: 2000;
+      padding: 40px 20px;
+      box-sizing: border-box;
+    }
+
+    .nx-lightbox.open { display: flex; }
+
+    .nx-lightbox-stage {
+      max-width: 92%;
+      max-height: 86%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border-radius: 12px;
+      backdrop-filter: blur(4px) saturate(120%);
+    }
+
+    .nx-lightbox-stage img {
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 8px;
+      transform-origin: center center;
+      animation: lightboxIn .36s cubic-bezier(.22,.9,.32,1);
+      box-shadow: 0 24px 60px rgba(2,6,23,0.6);
+    }
+
+    @keyframes lightboxIn {
+      from { opacity: 0; transform: scale(.96); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .nx-lightbox-close {
+      position: absolute;
+      top: 22px;
+      right: 22px;
+      background: rgba(0,0,0,0.4);
+      color: #fff;
+      border: 0;
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      font-size: 22px;
+      z-index: 2010;
+      cursor: pointer;
+      box-shadow: 0 8px 22px rgba(0,0,0,0.6);
+    }
+
+    .nx-lightbox-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.06);
+      color: #fff;
+      border: 0;
+      width: 56px;
+      height: 56px;
+      border-radius: 999px;
+      font-size: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2010;
+      cursor: pointer;
+      transition: transform .12s ease, background .12s ease;
+    }
+    .nx-lightbox-prev { left: 24px; }
+    .nx-lightbox-next { right: 24px; }
+
+    .nx-lightbox-nav:hover, .nx-lightbox-close:hover { transform: scale(1.05); background: rgba(255,255,255,0.12); }
+
+    /* Responsive adjustments */
+    @media (max-width: 920px) {
+      .nx-carousel-card { width: 94%; padding: 12px; }
+      .nx-carousel-item { height: 160px; }
+      .nx-prev { left: 6px; }
+      .nx-next { right: 6px; }
+      .nx-lightbox { padding: 18px; }
+      .nx-lightbox-nav { width: 44px; height: 44px; font-size: 22px; left: 10px; right: 10px; }
+    }
+
+    @media (max-width: 520px) {
+      .nx-carousel-page { padding: 12px; gap: 8px; }
+      .nx-carousel-item { height: 140px; }
+      .nx-btn { width: 44px; height: 44px; font-size: 16px; }
+    }
+  </style>
 </div>
-</div>
+
+<script>
+  (function () {
+    const track = document.getElementById('nxTrack');
+    const prev = document.getElementById('nxPrev');
+    const next = document.getElementById('nxNext');
+    const carousel = document.getElementById('nxCarousel');
+
+    let page = 0;
+    const pages = 2;
+    let interval = null;
+    const AUTO_MS = 3800;
+
+    function showPage(i, instant = false) {
+      page = ((i % pages) + pages) % pages;
+      if (instant) {
+        track.style.transition = 'none';
+        track.style.transform = 'translateX(' + (-50 * page) + '%)';
+        void track.offsetWidth;
+        track.style.transition = '';
+      } else {
+        track.style.transform = 'translateX(' + (-50 * page) + '%)';
+      }
+    }
+
+    function nextPage() { showPage(page + 1); resetTimer(); }
+    function prevPage() { showPage(page - 1); resetTimer(); }
+
+    prev.addEventListener('click', prevPage);
+    next.addEventListener('click', nextPage);
+
+    function startTimer() {
+      if (interval) return;
+      interval = setInterval(() => showPage(page + 1), AUTO_MS);
+    }
+    function stopTimer() { if (interval) { clearInterval(interval); interval = null; } }
+    function resetTimer() { stopTimer(); startTimer(); }
+
+    carousel.addEventListener('mouseenter', stopTimer);
+    carousel.addEventListener('mouseleave', startTimer);
+    carousel.addEventListener('focusin', stopTimer);
+    carousel.addEventListener('focusout', startTimer);
+
+    document.addEventListener('keydown', (e) => {
+      if (document.getElementById('nxLightbox')?.classList.contains('open')) {
+        // lightbox handles keys (see below)
+        return;
+      }
+      if (e.key === 'ArrowLeft') prevPage();
+      if (e.key === 'ArrowRight') nextPage();
+    });
+
+    showPage(0, true);
+    startTimer();
+
+    // Lightbox behaviour
+    const lightbox = document.getElementById('nxLightbox');
+    const lightboxImg = document.getElementById('nxLightboxImg');
+    const lightboxClose = lightbox.querySelector('.nx-lightbox-close');
+    const lightboxPrev = lightbox.querySelector('.nx-lightbox-prev');
+    const lightboxNext = lightbox.querySelector('.nx-lightbox-next');
+
+    // collect all images in carousel in order
+    const imgs = Array.from(document.querySelectorAll('#nxTrack .nx-carousel-item img'));
+    const srcs = imgs.map(i => i.getAttribute('src'));
+    let currentIndex = 0;
+
+    // open on click
+    imgs.forEach((img, idx) => {
+      img.parentElement.addEventListener('click', (e) => {
+        e.preventDefault();
+        openLightbox(idx);
+      });
+      // keyboard accessibility
+      img.parentElement.tabIndex = 0;
+      img.parentElement.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Enter' || ev.key === ' ') openLightbox(idx);
+      });
+    });
+
+    function openLightbox(idx) {
+      currentIndex = idx;
+      lightboxImg.src = srcs[currentIndex];
+      lightbox.classList.add('open');
+      lightbox.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      lightbox.focus?.();
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('open');
+      lightbox.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    function showLightboxIndex(i) {
+      currentIndex = ((i % srcs.length) + srcs.length) % srcs.length;
+      // small transition trick: fade out then set src
+      lightboxImg.style.opacity = '0';
+      setTimeout(() => {
+        lightboxImg.src = srcs[currentIndex];
+        lightboxImg.style.opacity = '1';
+      }, 120);
+    }
+
+    lightboxClose.addEventListener('click', closeLightbox);
+    lightboxPrev.addEventListener('click', () => showLightboxIndex(currentIndex - 1));
+    lightboxNext.addEventListener('click', () => showLightboxIndex(currentIndex + 1));
+
+    // close when clicking outside image
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox || e.target === lightbox.querySelector('.nx-lightbox-stage')) {
+        closeLightbox();
+      }
+    });
+
+    // keyboard for lightbox
+    document.addEventListener('keydown', (e) => {
+      if (!lightbox.classList.contains('open')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') showLightboxIndex(currentIndex - 1);
+      if (e.key === 'ArrowRight') showLightboxIndex(currentIndex + 1);
+    });
+
+    // pause carousel autoplay when lightbox open
+    const observer = new MutationObserver(() => {
+      if (lightbox.classList.contains('open')) stopTimer();
+      else startTimer();
+    });
+    observer.observe(lightbox, { attributes: true, attributeFilter: ['class'] });
+
+    // expose small API
+    window.nxCarousel = { showPage, nextPage, prevPage, openLightbox, closeLightbox };
+  })();
+</script>
+
 
 
 
@@ -583,27 +1274,7 @@ document.querySelectorAll('.dropdown-menu .dropdown-toggle').forEach(function(el
 <!-- Bootstrap Icons CDN -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
-<section class="contact-section" id="contact">
-  <div class="contact-container">
-    <!-- Left: Title + Form -->
-    <div class="contact-left">
-      <h2 class="contact-title">Contact Us</h2>
-      <form class="contact-form">
-        <input type="text" placeholder="Your Name" required>
-        <input type="text" placeholder="Subject" required>
-        <textarea placeholder="Message" rows="5" required></textarea>
-        <button type="submit">Send Message</button>
-      </form>
-    </div>
 
-    <!-- Right: Info with Icons -->
-    <div class="contact-right">
-      <div class="contact-info"><i class="bi bi-geo-alt-fill"></i> 123 Main Street, Colombo, Sri Lanka</div>
-      <div class="contact-info"><i class="bi bi-telephone-fill"></i> +94 77 123 4567</div>
-      <div class="contact-info"><i class="bi bi-envelope-fill"></i> support@example.com</div>
-    </div>
-  </div>
-</section>
 
 
 <footer class="footer-section">
@@ -829,60 +1500,72 @@ document.addEventListener("DOMContentLoaded", () => {
 
 <!-- Organizer Modal -->
 <div class="modal fade" id="organizerModal" tabindex="-1" aria-labelledby="organizerModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content" style="max-width: 600px; margin: auto;">
-      <div class="modal-header">
-        <h5 class="modal-title">Organizer Registration</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
+<div class="modal-dialog modal-dialog-centered modal-lg" style="display:flex; justify-content:center; align-items:center;">
+  <div class="modal-content" style="max-width:600px; width:100%; margin:auto; border-radius:16px; box-shadow:0 30px 60px rgba(0,0,0,0.15); overflow:hidden; font-family:'Inter', sans-serif; background:#fff;">
 
-        <!-- Success/Error Message -->
-        <?php if (!empty($organizer_success)): ?>
-          <div class="alert alert-success"><?= $organizer_success ?></div>
-        <?php elseif (!empty($organizer_error)): ?>
-          <div class="alert alert-danger"><?= $organizer_error ?></div>
-        <?php endif; ?>
+    <!-- Header -->
+    <div class="modal-header" style="background-color:#f8fafc; color:#0f172a; border-bottom:none; padding:1.5rem 2rem;">
+      <h5 class="modal-title" style="font-size:1.5rem; font-weight:700; letter-spacing:0.5px;">Organizer Registration</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter: invert(1); transition: transform 0.2s ease;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></button>
+    </div>
 
-        <form method="POST" action="" autocomplete="off">
-          <div class="mb-2">
-            <label for="orgEmail" class="form-label">Email</label>
-            <input type="email" name="org_email" class="form-control form-control-sm" id="orgEmail" required>
-          </div>
+    <!-- Body -->
+    <div class="modal-body" style="padding:2rem; background-color:#f8fafc;">
 
-          <div class="mb-2">
-            <label for="orgDegree" class="form-label">Degree Program</label>
-            <select name="org_degree" class="form-select form-select-sm" id="orgDegree" required>
-              <option value="" disabled selected>Select program</option>
-              <option>BBST</option>
-              <option>BICT</option>
-              <option>BET</option>
-              <option>CST</option>
-              <option>IIT</option>
-              <option>MRT</option>
-              <option>AQT</option>
-              <option>HTE</option>
-            </select>
-          </div>
+      <!-- Success/Error Message -->
+      <?php if (!empty($organizer_success)): ?>
+        <div style="padding:1rem; border-radius:12px; margin-bottom:1rem; font-size:0.95rem; background-color:#d1fae5; color:#065f46; font-weight:500; box-shadow:0 2px 6px rgba(0,0,0,0.05);"><?= $organizer_success ?></div>
+      <?php elseif (!empty($organizer_error)): ?>
+        <div style="padding:1rem; border-radius:12px; margin-bottom:1rem; font-size:0.95rem; background-color:#fee2e2; color:#991b1b; font-weight:500; box-shadow:0 2px 6px rgba(0,0,0,0.05);"><?= $organizer_error ?></div>
+      <?php endif; ?>
 
-          <div class="mb-2">
-            <label for="orgExperience" class="form-label">Experience</label>
-            <input type="text" name="org_experience" class="form-control form-control-sm" id="orgExperience" required>
-          </div>
+      <form method="POST" action="" autocomplete="off" style="display:flex; flex-direction:column; gap:1.2rem;">
 
-          <div class="mb-2">
-            <label for="orgDescription" class="form-label">Description</label>
-            <textarea name="org_description" class="form-control form-control-sm" id="orgDescription" rows="3" required></textarea>
-          </div>
+        <!-- Auto-filled Email (read-only) -->
+        <div style="display:flex; flex-direction:column;">
+          <label for="orgEmail" style="font-weight:600; color:#0f172a; margin-bottom:0.25rem;">Email</label>
+          <input type="email" name="org_email" id="orgEmail" value="<?= isset($_SESSION['email']) ? htmlspecialchars($_SESSION['email']) : '' ?>" readonly style="padding:0.75rem 1rem; border:1px solid #cbd5e1; border-radius:12px; font-size:0.95rem; color:#111827; background:#e5e7eb; cursor:not-allowed; transition: all 0.3s ease;">
+        </div>
 
-          <div class="d-grid">
-            <button type="submit" name="organizer_submit" class="btn btn-success btn-sm">Submit</button>
-          </div>
-        </form>
+        <!-- Degree Program -->
+        <div style="display:flex; flex-direction:column;">
+          <label for="orgDegree" style="font-weight:600; color:#0f172a; margin-bottom:0.25rem;">Degree Program</label>
+          <select name="org_degree" id="orgDegree" required style="padding:0.75rem 1rem; border:1px solid #cbd5e1; border-radius:12px; font-size:0.95rem; color:#111827; background:#fff; transition: all 0.3s ease;">
+            <option value="" disabled selected>Select program</option>
+            <option>BBST</option>
+            <option>BICT</option>
+            <option>BET</option>
+            <option>CST</option>
+            <option>IIT</option>
+            <option>MRT</option>
+            <option>AQT</option>
+            <option>HTE</option>
+          </select>
+        </div>
 
-      </div>
+        <div style="display:flex; flex-direction:column;">
+          <label for="orgExperience" style="font-weight:600; color:#0f172a; margin-bottom:0.25rem;">Experience</label>
+          <input type="text" name="org_experience" id="orgExperience" required style="padding:0.75rem 1rem; border:1px solid #cbd5e1; border-radius:12px; font-size:0.95rem; color:#111827; background:#fff; transition: all 0.3s ease;">
+        </div>
+
+        <div style="display:flex; flex-direction:column;">
+          <label for="orgDescription" style="font-weight:600; color:#0f172a; margin-bottom:0.25rem;">Description</label>
+          <textarea name="org_description" id="orgDescription" rows="3" required style="padding:0.75rem 1rem; border:1px solid #cbd5e1; border-radius:12px; font-size:0.95rem; color:#111827; background:#fff; transition: all 0.3s ease;"></textarea>
+        </div>
+
+        <div style="display:grid; margin-top:1rem;">
+          <button type="submit" name="organizer_submit" style="padding:0.75rem 1.5rem; font-size:1rem; font-weight:600; border:none; border-radius:12px; background-color:#0f172a; color:white; cursor:pointer; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 15px rgba(0,0,0,0.25)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">Submit</button>
+        </div>
+
+      </form>
+
     </div>
   </div>
+</div>
+
+
+
+
 </div>
 
 

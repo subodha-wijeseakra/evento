@@ -2,7 +2,7 @@
 session_start();
 
 if (!isset($_SESSION['username'])) {
-    header("Location: login.php");
+    header("Location: index.php");
     exit();
 }
 
@@ -209,6 +209,7 @@ if ($email) {
   <script src="Assests/js/carousel.js" defer></script>
   <script src="Assests/js/navbar.js" defer></script>
 <style>
+  
   .responsive-stroke {
     width: 80%;
     margin: 2rem auto;
@@ -307,14 +308,14 @@ if ($email) {
         :root {
       --primary-color: #007bff;
       --success-color: #28a745;
-      --bg-light: #f8f9fa;
+      --bg-light: #fff;
       --text-light: #6c757d;
     }
 
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background-color: var(--bg-light);
+      background-color: white;
       padding: 0px;
     }
 
@@ -674,44 +675,201 @@ if ($email) {
 
 
 
-  <div class="event-container" style="margin-top: 80px;">
-    <div class="event-carousel">
-      <?php foreach ($images as $img): ?>
-        <img src="<?= htmlspecialchars($img) ?>" alt="Event Slide">
-      <?php endforeach; ?>
-      <?php if (count($images) > 1): ?>
-        <button class="carousel-nav nav-left" onclick="prevSlide()">&#10094;</button>
-        <button class="carousel-nav nav-right" onclick="nextSlide()">&#10095;</button>
+<div class="event-wrapper">
+
+  <!-- Left image / Right details layout -->
+  <div class="event-card">
+    <!-- Left Image -->
+    <div class="event-image">
+      <?php if (!empty($images)) : ?>
+        <img src="<?php echo htmlspecialchars($images[0]); ?>" alt="Event Image">
+      <?php else: ?>
+        <div class="no-image">No Image</div>
       <?php endif; ?>
     </div>
 
-    <div class="event-info">
-      <div class="info-section">
-        <strong>Title:</strong> <?= htmlspecialchars($event['title']) ?>
-      </div>
-      <div class="info-section">
-        <strong>Date:</strong> <?= htmlspecialchars($event['event_date']) ?>
-      </div>
-      <div class="info-section">
-        <strong>Description:</strong> <?= htmlspecialchars($event['description']) ?>
-      </div>
-      <div class="info-section">
-        <strong>Fundraising Campaigns:</strong>
-        <ul>
-          <?php foreach ($campaigns as $c): ?>
-            <li><?= htmlspecialchars($c['campaign_name']) ?> - <?= $c['amount_raised'] ?>/<?= $c['amount_goal'] ?></li>
-          <?php endforeach; ?>
-        </ul>
-      </div>
-      <div class="info-section">
-        <strong>Status:</strong> <?= htmlspecialchars($event['status']) ?>
-      </div>
-      <form method="POST">
-        <button type="submit" name="next" class="event-button">Next Event</button>
+    <!-- Right Details -->
+    <div class="event-details">
+      <?php 
+        $info_fields = [
+          'Title' => 'title',
+          'Date' => 'event_date',
+          'Description' => 'description',
+          'Status' => 'status'
+        ];
+
+        foreach ($info_fields as $label => $key) :
+          if (!empty($event[$key])) :
+      ?>
+        <div class="info-item">
+          <span class="label"><?php echo $label; ?>:</span>
+          <span class="value"><?php echo htmlspecialchars($event[$key]); ?></span>
+        </div>
+      <?php 
+          endif;
+        endforeach; 
+      ?>
+
+      <?php if (!empty($campaigns)) : ?>
+        <div class="info-item">
+          <span class="label">Fundraising Campaigns:</span>
+          <ul>
+            <?php foreach ($campaigns as $c) : ?>
+              <li><?php echo htmlspecialchars($c['campaign_name']); ?> - <?php echo htmlspecialchars($c['amount_raised']); ?>/<?php echo htmlspecialchars($c['amount_goal']); ?></li>
+            <?php endforeach; ?>
+          </ul>
+        </div>
+      <?php endif; ?>
+
+      <form method="POST" class="next-event-form">
+        <button type="submit" name="next">Next Event</button>
       </form>
     </div>
   </div>
 </div>
+
+<style>
+body {
+  font-family: 'Inter', sans-serif;
+  background: #fff;
+  margin: 0;
+  padding: 0;
+}
+
+.event-wrapper {
+  width: 90%;
+  max-width: 1000px;
+  margin: 6rem auto 3rem auto; /* top margin to avoid navbar */
+}
+
+.event-card {
+  display: flex;
+  flex-direction: row;
+  background: rgba(255,255,255,0.85);
+  border-radius: 20px;
+  border: 1px solid rgba(0,0,0,0.08); /* subtle border instead of heavy shadow */
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.event-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(0,0,0,0.15);
+}
+
+/* Left Image */
+.event-image {
+  flex: 1;
+  min-width: 300px;
+  max-width: 400px;
+  overflow: hidden;
+  position: relative;
+}
+
+.event-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.event-card:hover .event-image img {
+  transform: scale(1.03);
+}
+
+.no-image {
+  width: 100%;
+  height: 100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:#888;
+  font-size:1.2rem;
+  background:#e5e7eb;
+}
+
+/* Right Details */
+.event-details {
+  flex: 1;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.info-item {
+  padding: 1rem;
+  background: rgba(255,255,255,0.6);
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.08); /* subtle border effect */
+  display: flex;
+  flex-direction: column;
+}
+
+.info-item .label {
+  font-weight: 600;
+  color: #0f172a;
+  font-size: 1.05rem;
+  margin-bottom: 0.3rem;
+}
+
+.info-item .value {
+  color: #4b5563;
+  font-size: 0.95rem;
+}
+
+.info-item ul {
+  padding-left: 1rem;
+  margin: 0;
+  list-style-type: disc;
+  color: #4b5563;
+  font-size: 0.95rem;
+}
+
+/* Next Event Button */
+.next-event-form {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.next-event-form button {
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  background: #0f172a;
+  color: white;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.next-event-form button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .event-card {
+    flex-direction: column;
+  }
+  .event-image {
+    min-width: 100%;
+    max-width: 100%;
+    height: 250px;
+  }
+  .event-details {
+    padding: 1.5rem;
+  }
+}
+</style>
+
+
+
 
 
 
@@ -793,191 +951,395 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_application'])
 
 
 
-<div class="form-container">
- 
+<div class="modern-form-wrapper">
 
   <?php if (isset($success) && $success): ?>
-    <div class="alert" 
-     style="background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; padding: 12px 20px; border-radius: 4px; margin-bottom: 15px;">
-  Your event application was submitted successfully!
-</div>
+    <div class="alert-success">
+      Your event application was submitted successfully!
+    </div>
   <?php endif; ?>
 
-  <div class="step-header" id="stepIndicator">
-    <div class="step-tab active" data-step="0">Basic</div>
-    <div class="step-tab" data-step="1">Proposal</div>
-    <div class="step-tab" data-step="2">Gallery</div>
-    <div class="step-tab" data-step="3">Publish</div>
-  </div>
+  <div class="modern-form-card">
 
-  <form method="POST" enctype="multipart/form-data" id="eventForm">
-    <!-- Step 1 -->
- <div class="step-content active" data-step="0">
-  <div class="form-group">
-    <label>Event Title</label>
-    <input type="text" name="title" class="form-control" required>
-  </div>
-  <div class="form-group">
-    <label>Description</label>
-    <textarea name="description" class="form-control" rows="3" required></textarea>
-  </div>
-  <div class="form-group">
-    <label>Event Date</label>
-    <input type="date" name="date" class="form-control" required>
-  </div>
-  <div class="btn-group">
-    <button type="button" class="btn btn-next"
-      style="background-color: #0d6efd; color: white; border: none; padding: 8px 18px; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 14px;">Next</button>
+    <!-- Left Image Panel -->
+    <div class="form-image">
+      <img src="Assests/Images/1.png" alt="Event Illustration">
+    </div>
+
+    <!-- Right Form Panel -->
+    <div class="form-content">
+
+      <!-- Progress Bar -->
+      <div class="progress-bar">
+        <div class="progress" style="width:25%"></div>
+      </div>
+
+      <!-- Step Form -->
+      <form method="POST" enctype="multipart/form-data" id="eventForm">
+
+        <!-- Step 1 -->
+        <div class="step-content active" data-step="0">
+          <h2>Basic Info</h2>
+          <input type="text" name="title" placeholder="Event Title" required>
+          <textarea name="description" rows="3" placeholder="Description" required></textarea>
+          <input type="date" name="date" required>
+          <div class="btn-group">
+            <button type="button" class="btn-next" 
+              style="padding: 0.75rem 1.5rem; font-weight: 600; font-size: 1rem; background: #0f172a; color: white; border-radius: 12px; border: none; cursor: pointer; transition: all 0.3s ease;">Next</button>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step-content" data-step="1">
+          <h2>Proposal</h2>
+          <input type="file" name="proposal" accept=".pdf,.doc,.docx" required>
+          <div class="btn-group">
+            <button type="button" class="btn-prev" 
+              style="padding: 0.75rem 1.5rem; font-weight: 600; font-size: 1rem; background: #0f172a; color: white; border-radius: 12px; border: none; cursor: pointer; transition: all 0.3s ease;">Back</button>
+            <button type="button" class="btn-next" 
+              style="padding: 0.75rem 1.5rem; font-weight: 600; font-size: 1rem; background: #0f172a; color: white; border-radius: 12px; border: none; cursor: pointer; transition: all 0.3s ease;">Next</button>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step-content" data-step="2">
+          <h2>Gallery</h2>
+          <input type="file" name="image0" accept="image/*">
+          <input type="file" name="image1" accept="image/*">
+          <input type="file" name="image2" accept="image/*">
+          <div class="btn-group">
+            <button type="button" class="btn-prev" 
+              style="padding: 0.75rem 1.5rem; font-weight: 600; font-size: 1rem; background: #0f172a; color: white; border-radius: 12px; border: none; cursor: pointer; transition: all 0.3s ease;">Back</button>
+            <button type="button" class="btn-next" 
+              style="padding: 0.75rem 1.5rem; font-weight: 600; font-size: 1rem; background: #0f172a; color: white; border-radius: 12px; border: none; cursor: pointer; transition: all 0.3s ease;">Next</button>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="step-content" data-step="3">
+          <h2>Publish</h2>
+          <label><input type="checkbox" name="agree" required> I agree to the terms</label>
+          <div class="btn-group">
+            <button type="button" class="btn-prev" 
+              style="padding: 0.75rem 1.5rem; font-weight: 600; font-size: 1rem; background: #0f172a; color: white; border-radius: 12px; border: none; cursor: pointer; transition: all 0.3s ease;">Back</button>
+            <button type="submit" name="submit_application" class="btn-submit" 
+              style="padding: 0.75rem 1.5rem; font-weight: 600; font-size: 1rem; background: #0f172a; color: white; border-radius: 12px; border: none; cursor: pointer; transition: all 0.3s ease;">Submit</button>
+          </div>
+        </div>
+
+      </form>
+    </div>
   </div>
 </div>
-    <!-- Step 2 -->
-    <div class="step-content" data-step="1">
-      <div class="form-group">
-        <label>Upload Proposal (PDF/DOCX)</label>
-        <input type="file" name="proposal" class="form-control" accept=".pdf,.doc,.docx" required>
-      </div>
-      <div class="btn-group">
-        <button type="button" class="btn btn-prev"  style="background-color: #6c757d; color: white; border: none; padding: 8px 18px; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 14px;">Back</button>
-        <button type="button" class="btn btn-next"  style="background-color: #0d6efd; color: white; border: none; padding: 8px 18px; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 14px;">Next</button>
-      </div>
-    </div>
 
-    <!-- Step 3 -->
-    <div class="step-content" data-step="2">
-      <div class="form-group">
-        <label>Flyer 1</label>
-        <input type="file" name="image0" class="form-control" accept="image/*">
-      </div>
-      <div class="form-group">
-        <label>Flyer 2</label>
-        <input type="file" name="image1" class="form-control" accept="image/*">
-      </div>
-      <div class="form-group">
-        <label>Flyer 3</label>
-        <input type="file" name="image2" class="form-control" accept="image/*">
-      </div>
-      <div class="btn-group">
-        <button type="button" class="btn btn-prev"  style="background-color: #6c757d; color: white; border: none; padding: 8px 18px; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 14px;">Back</button>
-        <button type="button" class="btn btn-next"  style="background-color: #0d6efd; color: white; border: none; padding: 8px 18px; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 14px;">Next</button>
-      </div>
-    </div>
+<style>
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  color: #0f172a;
+}
 
-    <!-- Step 4 -->
-    <div class="step-content" data-step="3">
-      <div class="form-group">
-        <input type="checkbox" name="agree" required>
-        <label>I agree to the terms and conditions.</label>
-      </div>
-      <div class="btn-group">
-        <button type="button" class="btn btn-prev"  style="background-color: #6c757d; color: white; border: none; padding: 8px 18px; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 14px;">Back</button>
-        <button type="submit" class="btn btn-submit"  name="submit_application"  style="background-color: #198754; color: white; border: none; padding: 8px 18px; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 14px;">Submit Application</button>
-      </div>
-    </div>
-  </form>
-</div>
+.modern-form-wrapper {
+  width: 90%;
+  max-width: 900px;
+  margin: 6rem auto;
+}
+
+.alert-success {
+  background: rgba(72, 187, 120, 0.2);
+  color: #248a4b;
+  border: 1px solid #1f6f40;
+  padding: 14px 20px;
+  border-radius: 12px;
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+.modern-form-card {
+  display: flex;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.form-image {
+  flex: 1;
+  overflow: hidden;
+}
+
+.form-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.form-image img:hover {
+  transform: scale(1.05);
+}
+
+.form-content {
+  flex: 1;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(0,0,0,0.08);
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.progress {
+  height: 100%;
+  background: #0d6efd;
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+.step-content {
+  display: none;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.step-content.active {
+  display: flex;
+}
+
+.step-content h2 {
+  margin:0;
+  color:#0f172a;
+}
+
+input[type="text"], input[type="date"], input[type="file"], textarea {
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.12);
+  background: #ffffff;
+  font-size: 14px;
+  outline: none;
+  transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+input:focus, textarea:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 2px rgba(13,110,253,0.15);
+}
+
+label input[type="checkbox"] { margin-right: 8px; }
+
+@media (max-width: 768px) {
+  .modern-form-card { flex-direction: column; }
+  .form-image { height: 200px; }
+}
+</style>
 
 <script>
-  const steps = document.querySelectorAll('.step-content');
-  const stepTabs = document.querySelectorAll('.step-tab');
-  const nextButtons = document.querySelectorAll('.btn-next');
-  const prevButtons = document.querySelectorAll('.btn-prev');
+const steps = document.querySelectorAll('.step-content');
+const nextButtons = document.querySelectorAll('.btn-next');
+const prevButtons = document.querySelectorAll('.btn-prev');
+const progress = document.querySelector('.progress');
+let currentStep = 0;
 
-  let currentStep = 0;
+function updateStep() {
+  steps.forEach((s,i)=>s.classList.toggle('active',i===currentStep));
+  progress.style.width = ((currentStep+1)/steps.length)*100 + '%';
+}
 
-  function updateStepDisplay() {
-    steps.forEach((step, index) => {
-      step.classList.toggle('active', index === currentStep);
-    });
+nextButtons.forEach(btn => btn.addEventListener('click',()=>{if(currentStep<steps.length-1){currentStep++;updateStep();}}));
+prevButtons.forEach(btn => btn.addEventListener('click',()=>{if(currentStep>0){currentStep--;updateStep();}}));
+updateStep();
+</script>
 
-    stepTabs.forEach((tab, index) => {
-      tab.classList.toggle('active', index === currentStep);
-      tab.classList.toggle('completed', index < currentStep);
-    });
-  }
 
-  nextButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      if (currentStep < steps.length - 1) {
-        currentStep++;
-        updateStepDisplay();
-      }
-    });
-  });
+<style>
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
+  margin:0;
+  padding:0;
+}
 
-  prevButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      if (currentStep > 0) {
-        currentStep--;
-        updateStepDisplay();
-      }
-    });
-  });
+/* Wrapper */
+.modern-form-wrapper {
+  width: 90%;
+  max-width: 70%;
+  margin: 3rem auto;
+}
 
-  stepTabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      const target = parseInt(tab.getAttribute('data-step'));
-      if (target <= currentStep) {
-        currentStep = target;
-        updateStepDisplay();
-      }
-    });
-  });
+/* Success Alert */
+.alert-success {
+  background: rgba(72, 187, 120, 0.2);
+  color: #248a4b;
+  border: 1px solid #1f6f40;
+  padding: 14px 20px;
+  border-radius: 12px;
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+/* Card */
+.modern-form-card {
+  display: flex;
+  border-radius: 20px;
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+  background: rgba(255,255,255,0.75);
+  border: 1px solid rgba(0,0,0,0.08);
+}
+
+/* Left Image */
+.form-image {
+  flex: 1;
+  overflow: hidden;
+}
+
+.form-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.9);
+  transition: transform 0.3s ease;
+}
+
+.form-image img:hover {
+  transform: scale(1.05);
+}
+
+/* Right Form Panel */
+.form-content {
+  flex: 1;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Progress Bar */
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(0,0,0,0.08);
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.progress {
+  height: 100%;
+  background: #0d6efd;
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+/* Step Content */
+.step-content {
+  display: none;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.step-content.active {
+  display: flex;
+}
+
+.step-content h2 {
+  margin:0;
+  color:#0f172a;
+}
+
+/* Inputs */
+input[type="text"], input[type="date"], input[type="file"], textarea {
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.12);
+  background: rgba(255,255,255,0.7);
+  font-size: 14px;
+  outline: none;
+  transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+input:focus, textarea:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 2px rgba(13,110,253,0.15);
+}
+
+/* Buttons */
+.btn-group {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.btn-next, .btn-prev, .btn-submit {
+  padding: 10px 22px;
+  border-radius: 20px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-next { background:#0d6efd; color:#fff; }
+.btn-prev { background:#6c757d; color:#fff; }
+.btn-submit { background:#198754; color:#fff; }
+
+.btn-next:hover, .btn-prev:hover, .btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+}
+
+/* Checkbox */
+label input[type="checkbox"] { margin-right: 8px; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .modern-form-card { flex-direction: column; }
+  .form-image { height: 200px; }
+}
+</style>
+
+<script>
+const steps = document.querySelectorAll('.step-content');
+const nextButtons = document.querySelectorAll('.btn-next');
+const prevButtons = document.querySelectorAll('.btn-prev');
+const progress = document.querySelector('.progress');
+let currentStep = 0;
+
+function updateStep() {
+  steps.forEach((s,i)=>s.classList.toggle('active',i===currentStep));
+  progress.style.width = ((currentStep+1)/steps.length)*100 + '%';
+}
+
+nextButtons.forEach(btn => btn.addEventListener('click',()=>{if(currentStep<steps.length-1){currentStep++;updateStep();}}));
+prevButtons.forEach(btn => btn.addEventListener('click',()=>{if(currentStep>0){currentStep--;updateStep();}}));
+updateStep();
 </script>
 
 
 
 
-<div class="content-container" style="margin-bottom: 20px;">
-  <h2 class="content-title">Event Calendar</h2>
-</div>
+
   
-<div class="carousel-wrapper">
-  <div id="courseCarousel" class="carousel slide" data-ride="carousel" data-interval="10000">
-    <div class="carousel-inner">
-      <?php
-      include 'fetch_courses.php';
-      $chunks = array_chunk($courses, 4);
-      foreach ($chunks as $index => $chunk) {
-        echo '<div class="carousel-item'.($index === 0 ? ' active' : '').'">';
-        echo '<div class="row justify-content-center">';
-        foreach ($chunk as $i => $course) {
-          echo '<div class="col-md-5">';
-          echo '<div class="tile">';
-          echo '<h5>'.$course['title'].'</h5>';
-          echo '<div class="department">'.$course['department'].'</div>';
-          echo '<div class="description">'.$course['description'].'</div>';
-          echo '<div class="footer">';
-          echo '<span>'.$course['date'].'</span>';
-          echo '<span>$'.$course['fee'].'</span>';
-          echo '</div>'; // footer
-          echo '</div>'; // tile
-          echo '</div>'; // col
-        }
-        echo '</div>'; // row
-        echo '</div>'; // carousel-item
-      }
-      ?>
-      
-    </div>
-<!-- Controls -->
-<div class="carousel-controls d-flex justify-content-between align-items-center position-absolute top-50 start-0 w-100 px-3" style="transform: translateY(-40%); z-index: 3;">
- 
-
-   <a class="carousel-control-prev" href="#courseCarousel" role="button" data-slide="prev">
-  <i class="bi bi-arrow-left-circle-fill carousel-btn left"></i>
-</a>
-<a class="carousel-control-next" href="#courseCarousel" role="button" data-slide="next">
-  <i class="bi bi-arrow-right-circle-fill carousel-btn right"></i>
-</a>
-</div>
-  </div>
-</div>
 
 
 
 
 
-<hr class="responsive-stroke">
 
 
 <!-- Reusable Content Component -->
@@ -986,84 +1348,384 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_application'])
 </div>
 
 
+<div class="nx-carousel-card" aria-roledescription="carousel" id="nxCarousel">
+  <div class="nx-badge">Gallery • v1.0</div>
 
-<div class="carousel-section">
-  <div class="custom-carousel-wrapper">
-    <div class="custom-carousel-track" id="customCarouselTrack">
-      <div class="custom-carousel-item"><img src="Assests/Images/1.png" alt="Slide 1"></div>
-      <div class="custom-carousel-item"><img src="Assests/Images/3.jpg" alt="Slide 2"></div>
-      <div class="custom-carousel-item"><img src="Assests/Images/2.png" alt="Slide 1"></div>
-      <div class="custom-carousel-item"><img src="Assests/Images/3.jpg" alt="Slide 2"></div>
-      <div class="custom-carousel-item"><img src="Assests/Images/2.png" alt="Slide 1"></div>
-      <div class="custom-carousel-item"><img src="Assests/Images/3.jpg" alt="Slide 2"></div>  
-    </div>
-    <div class="custom-carousel-controls">
-      <button class="custom-carousel-button" id="customPrevBtn">&#10094;</button>
-      <button class="custom-carousel-button" id="customNextBtn">&#10095;</button>
-    </div>
-  </div>
-</div>
-</div>
-
-
-
-
-<!-- FAQs Section -->
-<section class="faqs-section" id="faq">
-  <div class="faq-container">
-    <h2>Frequently Asked Questions</h2>
-
-    <div class="faq-item">
-      <div class="faq-question" onclick="toggleFAQ(this)">
-        <span>What services do you offer?</span>
-        <span class="faq-icon">&#9662;</span>
+  <div class="nx-carousel-viewport">
+    <div class="nx-carousel-track" id="nxTrack" role="list">
+      <!-- Page 1 (first 3) -->
+      <div class="nx-carousel-page" role="group" aria-roledescription="page" aria-label="1 of 2">
+        <div class="nx-carousel-item"><img src="Assests/Images/1.png" alt="Slide 1"></div>
+        <div class="nx-carousel-item"><img src="Assests/Images/3.jpg" alt="Slide 2"></div>
+        <div class="nx-carousel-item"><img src="Assests/Images/2.png" alt="Slide 3"></div>
       </div>
-      <div class="faq-answer">
-        We offer a wide range of services including design, development, event planning, and more.
-      </div>
-    </div>
 
-    <div class="faq-item">
-      <div class="faq-question" onclick="toggleFAQ(this)">
-        <span>How can I contact your team?</span>
-        <span class="faq-icon">&#9662;</span>
-      </div>
-      <div class="faq-answer">
-        You can reach us through our contact form, email, or social media channels listed on our website.
-      </div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-question" onclick="toggleFAQ(this)">
-        <span>Do you provide support after delivery?</span>
-        <span class="faq-icon">&#9662;</span>
-      </div>
-      <div class="faq-answer">
-        Yes, we offer dedicated support and maintenance even after project delivery.
-      </div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-question" onclick="toggleFAQ(this)">
-        <span>What is your pricing model?</span>
-        <span class="faq-icon">&#9662;</span>
-      </div>
-      <div class="faq-answer">
-        Our pricing is flexible and based on project scope, duration, and complexity.
-      </div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-question" onclick="toggleFAQ(this)">
-        <span>Can I customize my project?</span>
-        <span class="faq-icon">&#9662;</span>
-      </div>
-      <div class="faq-answer">
-        Absolutely! We welcome customization and work closely with you to meet your needs.
+      <!-- Page 2 (next 3) -->
+      <div class="nx-carousel-page" role="group" aria-roledescription="page" aria-label="2 of 2">
+        <div class="nx-carousel-item"><img src="Assests/Images/3.jpg" alt="Slide 4"></div>
+        <div class="nx-carousel-item"><img src="Assests/Images/2.png" alt="Slide 5"></div>
+        <div class="nx-carousel-item"><img src="Assests/Images/3.jpg" alt="Slide 6"></div>
       </div>
     </div>
   </div>
-</section>
+
+  <button class="nx-btn nx-prev" id="nxPrev" aria-label="Previous set">&larr;</button>
+  <button class="nx-btn nx-next" id="nxNext" aria-label="Next set">&rarr;</button>
+
+  <!-- Lightbox / Zoomed view -->
+  <div id="nxLightbox" class="nx-lightbox" role="dialog" aria-hidden="true">
+    <button class="nx-lightbox-close" aria-label="Close">&times;</button>
+    <button class="nx-lightbox-nav nx-lightbox-prev" aria-label="Previous image">&#10094;</button>
+    <div class="nx-lightbox-stage" tabindex="0">
+      <img id="nxLightboxImg" src="" alt="Expanded image">
+    </div>
+    <button class="nx-lightbox-nav nx-lightbox-next" aria-label="Next image">&#10095;</button>
+  </div>
+
+  <style>
+    /* Desktop width 80% (normal screens) */
+    .nx-carousel-card {
+      width: 80%;
+      max-width: 80%;
+      margin: 40px auto;
+      padding: 20px;
+      border-radius: 14px;
+      position: relative;
+      background: linear-gradient(180deg,#ffffff,#fbfbfd);
+      box-shadow: 0 18px 40px rgba(2,6,23,0.08);
+      border: 1px solid rgba(15,23,42,0.04);
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      overflow: visible;
+    }
+
+    .nx-badge {
+      position: absolute;
+      left: 18px;
+      top: 14px;
+      z-index: 5;
+      background: rgba(15,23,42,0.92);
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 12px;
+      box-shadow: 0 6px 18px rgba(2,6,23,0.08);
+    }
+
+    .nx-carousel-viewport {
+      width: 100%;
+      overflow: hidden;
+      border-radius: 10px;
+      margin: 6px 0 0 0;
+    }
+
+    .nx-carousel-track {
+      display: flex;
+      width: 200%;
+      transition: transform 600ms cubic-bezier(.2,.9,.3,1);
+      will-change: transform;
+    }
+
+    .nx-carousel-page {
+      width: 50%;
+      display: flex;
+      gap: 14px;
+      padding: 22px;
+      box-sizing: border-box;
+      align-items: stretch;
+      justify-content: center;
+    }
+
+    .nx-carousel-item {
+      flex: 1 1 calc((100% / 3) - 14px);
+      min-width: 0;
+      height: 260px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: linear-gradient(180deg,#fff,#f8fafc);
+      box-shadow: 0 8px 24px rgba(2,6,23,0.06);
+      border: 1px solid #f3f4f6;
+      transition: transform .18s ease, box-shadow .18s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-in;
+    }
+
+    .nx-carousel-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      pointer-events: none; /* container handles clicks */
+    }
+
+    .nx-carousel-item:hover {
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 0 18px 36px rgba(2,6,23,0.10);
+    }
+
+    /* Controls placed overlay left/right vertically centered */
+    .nx-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 52px;
+      height: 52px;
+      border-radius: 999px;
+      border: 0;
+      background: rgba(255,255,255,0.9);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 18px;
+      color: #0b1220;
+      box-shadow: 0 10px 28px rgba(2,6,23,0.12);
+      transition: transform .12s ease, background .12s ease;
+      z-index: 7;
+    }
+    .nx-prev { left: 10px; }
+    .nx-next { right: 10px; }
+    .nx-btn:hover { transform: translateY(-50%) scale(1.04); background: #fff; }
+
+    /* Lightbox styles */
+    .nx-lightbox {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(4,6,12,0.75);
+      z-index: 2000;
+      padding: 40px 20px;
+      box-sizing: border-box;
+    }
+
+    .nx-lightbox.open { display: flex; }
+
+    .nx-lightbox-stage {
+      max-width: 92%;
+      max-height: 86%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border-radius: 12px;
+      backdrop-filter: blur(4px) saturate(120%);
+    }
+
+    .nx-lightbox-stage img {
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 8px;
+      transform-origin: center center;
+      animation: lightboxIn .36s cubic-bezier(.22,.9,.32,1);
+      box-shadow: 0 24px 60px rgba(2,6,23,0.6);
+    }
+
+    @keyframes lightboxIn {
+      from { opacity: 0; transform: scale(.96); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .nx-lightbox-close {
+      position: absolute;
+      top: 22px;
+      right: 22px;
+      background: rgba(0,0,0,0.4);
+      color: #fff;
+      border: 0;
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      font-size: 22px;
+      z-index: 2010;
+      cursor: pointer;
+      box-shadow: 0 8px 22px rgba(0,0,0,0.6);
+    }
+
+    .nx-lightbox-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.06);
+      color: #fff;
+      border: 0;
+      width: 56px;
+      height: 56px;
+      border-radius: 999px;
+      font-size: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2010;
+      cursor: pointer;
+      transition: transform .12s ease, background .12s ease;
+    }
+    .nx-lightbox-prev { left: 24px; }
+    .nx-lightbox-next { right: 24px; }
+
+    .nx-lightbox-nav:hover, .nx-lightbox-close:hover { transform: scale(1.05); background: rgba(255,255,255,0.12); }
+
+    /* Responsive adjustments */
+    @media (max-width: 920px) {
+      .nx-carousel-card { width: 94%; padding: 12px; }
+      .nx-carousel-item { height: 160px; }
+      .nx-prev { left: 6px; }
+      .nx-next { right: 6px; }
+      .nx-lightbox { padding: 18px; }
+      .nx-lightbox-nav { width: 44px; height: 44px; font-size: 22px; left: 10px; right: 10px; }
+    }
+
+    @media (max-width: 520px) {
+      .nx-carousel-page { padding: 12px; gap: 8px; }
+      .nx-carousel-item { height: 140px; }
+      .nx-btn { width: 44px; height: 44px; font-size: 16px; }
+    }
+  </style>
+</div>
+
+<script>
+  (function () {
+    const track = document.getElementById('nxTrack');
+    const prev = document.getElementById('nxPrev');
+    const next = document.getElementById('nxNext');
+    const carousel = document.getElementById('nxCarousel');
+
+    let page = 0;
+    const pages = 2;
+    let interval = null;
+    const AUTO_MS = 3800;
+
+    function showPage(i, instant = false) {
+      page = ((i % pages) + pages) % pages;
+      if (instant) {
+        track.style.transition = 'none';
+        track.style.transform = 'translateX(' + (-50 * page) + '%)';
+        void track.offsetWidth;
+        track.style.transition = '';
+      } else {
+        track.style.transform = 'translateX(' + (-50 * page) + '%)';
+      }
+    }
+
+    function nextPage() { showPage(page + 1); resetTimer(); }
+    function prevPage() { showPage(page - 1); resetTimer(); }
+
+    prev.addEventListener('click', prevPage);
+    next.addEventListener('click', nextPage);
+
+    function startTimer() {
+      if (interval) return;
+      interval = setInterval(() => showPage(page + 1), AUTO_MS);
+    }
+    function stopTimer() { if (interval) { clearInterval(interval); interval = null; } }
+    function resetTimer() { stopTimer(); startTimer(); }
+
+    carousel.addEventListener('mouseenter', stopTimer);
+    carousel.addEventListener('mouseleave', startTimer);
+    carousel.addEventListener('focusin', stopTimer);
+    carousel.addEventListener('focusout', startTimer);
+
+    document.addEventListener('keydown', (e) => {
+      if (document.getElementById('nxLightbox')?.classList.contains('open')) {
+        // lightbox handles keys (see below)
+        return;
+      }
+      if (e.key === 'ArrowLeft') prevPage();
+      if (e.key === 'ArrowRight') nextPage();
+    });
+
+    showPage(0, true);
+    startTimer();
+
+    // Lightbox behaviour
+    const lightbox = document.getElementById('nxLightbox');
+    const lightboxImg = document.getElementById('nxLightboxImg');
+    const lightboxClose = lightbox.querySelector('.nx-lightbox-close');
+    const lightboxPrev = lightbox.querySelector('.nx-lightbox-prev');
+    const lightboxNext = lightbox.querySelector('.nx-lightbox-next');
+
+    // collect all images in carousel in order
+    const imgs = Array.from(document.querySelectorAll('#nxTrack .nx-carousel-item img'));
+    const srcs = imgs.map(i => i.getAttribute('src'));
+    let currentIndex = 0;
+
+    // open on click
+    imgs.forEach((img, idx) => {
+      img.parentElement.addEventListener('click', (e) => {
+        e.preventDefault();
+        openLightbox(idx);
+      });
+      // keyboard accessibility
+      img.parentElement.tabIndex = 0;
+      img.parentElement.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Enter' || ev.key === ' ') openLightbox(idx);
+      });
+    });
+
+    function openLightbox(idx) {
+      currentIndex = idx;
+      lightboxImg.src = srcs[currentIndex];
+      lightbox.classList.add('open');
+      lightbox.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      lightbox.focus?.();
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('open');
+      lightbox.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    function showLightboxIndex(i) {
+      currentIndex = ((i % srcs.length) + srcs.length) % srcs.length;
+      // small transition trick: fade out then set src
+      lightboxImg.style.opacity = '0';
+      setTimeout(() => {
+        lightboxImg.src = srcs[currentIndex];
+        lightboxImg.style.opacity = '1';
+      }, 120);
+    }
+
+    lightboxClose.addEventListener('click', closeLightbox);
+    lightboxPrev.addEventListener('click', () => showLightboxIndex(currentIndex - 1));
+    lightboxNext.addEventListener('click', () => showLightboxIndex(currentIndex + 1));
+
+    // close when clicking outside image
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox || e.target === lightbox.querySelector('.nx-lightbox-stage')) {
+        closeLightbox();
+      }
+    });
+
+    // keyboard for lightbox
+    document.addEventListener('keydown', (e) => {
+      if (!lightbox.classList.contains('open')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') showLightboxIndex(currentIndex - 1);
+      if (e.key === 'ArrowRight') showLightboxIndex(currentIndex + 1);
+    });
+
+    // pause carousel autoplay when lightbox open
+    const observer = new MutationObserver(() => {
+      if (lightbox.classList.contains('open')) stopTimer();
+      else startTimer();
+    });
+    observer.observe(lightbox, { attributes: true, attributeFilter: ['class'] });
+
+    // expose small API
+    window.nxCarousel = { showPage, nextPage, prevPage, openLightbox, closeLightbox };
+  })();
+</script>
+
+
+
+
+
+
 
 
 
@@ -1072,27 +1734,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_application'])
 <!-- Bootstrap Icons CDN -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
-<section class="contact-section" id="contact">
-  <div class="contact-container">
-    <!-- Left: Title + Form -->
-    <div class="contact-left">
-      <h2 class="contact-title">Contact Us</h2>
-      <form class="contact-form">
-        <input type="text" placeholder="Your Name" required>
-        <input type="text" placeholder="Subject" required>
-        <textarea placeholder="Message" rows="5" required></textarea>
-        <button type="submit">Send Message</button>
-      </form>
-    </div>
 
-    <!-- Right: Info with Icons -->
-    <div class="contact-right">
-      <div class="contact-info"><i class="bi bi-geo-alt-fill"></i> 123 Main Street, Colombo, Sri Lanka</div>
-      <div class="contact-info"><i class="bi bi-telephone-fill"></i> +94 77 123 4567</div>
-      <div class="contact-info"><i class="bi bi-envelope-fill"></i> support@example.com</div>
-    </div>
-  </div>
-</section>
 
 
 <footer class="footer-section">
@@ -1677,8 +2319,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
 </script>
 
 
-</body>
-</html>
+
 
 <?php
 
